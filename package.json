@@ -1,0 +1,25 @@
+{
+    "name"              : "cursame-boletas",
+    "description"       : "Platform to create score cards for the Cursame system users.",
+    "version"           : "1.0.0",
+    "private"           : true,
+    "dependencies"  : {
+        "bcrypt"        : "0.8.7",
+        "body-parser"   : "1.15.1",
+        "debug"         : "2.2.0",
+        "express"       : "4.13.4",
+        "mongoose"      : "4.5.0",
+        "morgan"        : "1.7.0"
+    },
+    "devDependencies"   : {
+        "async"         : "1.5.2",
+        "chance"        : "1.0.3",
+        "mocha"         : "2.5.3",
+        "should"        : "9.0.2",
+        "supertest"     : "1.2.0"
+    },
+    "scripts"           : {
+        "start"         : "DEBUG=app node server.js",
+        "test"          : "istanbul cover _mocha -- -u exports -R spec"
+    }
+}
