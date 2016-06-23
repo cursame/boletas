@@ -10,8 +10,10 @@ app.set( 'env', process.env.ENV || 'development' );
 
 start.launch( app );
 
-var sessions        = require( './routers/sessions' );
+var applications    = require( './routers/applications' ),
+    sessions        = require( './routers/sessions' );
 
+app.use( '/applications', applications );
 app.use( '/sessions', sessions );
 
 app.use( error.notFound );
