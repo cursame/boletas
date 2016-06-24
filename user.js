@@ -3,7 +3,7 @@ var Utils       = require( './lib/utils' ),
     name        = process.argv[2],
     email       = process.argv[3],
     pass        = process.argv[4],
-    network     = process.argv[5],
+    school      = process.argv[5],
     type        = process.argv[6];
 
 Utils.connectDB();
@@ -11,7 +11,7 @@ Utils.connectDB();
 User.create({
     email       : email,
     name        : name,
-    network     : network,
+    school      : school,
     pass        : pass,
     type        : type
 }, function ( err, user ) {
@@ -22,7 +22,7 @@ User.create({
         console.log( '============= USER ==============' );
         console.log( 'Name - ' + user.name );
         console.log( 'Email - ' + user.email );
-        console.log( 'Network - ', user.network );
+        console.log( 'School - ', user.school );
         console.log( 'Pass - ' + pass );
         console.log( 'Type - ' + user.type );
     }

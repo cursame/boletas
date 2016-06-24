@@ -1,5 +1,5 @@
 var mongoose        = require( 'mongoose' ),
-    NetworkSchema   = new mongoose.Schema({
+    SchoolSchema    = new mongoose.Schema({
         creation_date   : {
             type        : Date,
             required    : true,
@@ -11,4 +11,4 @@ var mongoose        = require( 'mongoose' ),
         }
     });
 
-module.exports      = mongoose.model( 'Network', NetworkSchema );
+module.exports      = mongoose.model( 'School', SchoolSchema );

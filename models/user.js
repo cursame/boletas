@@ -17,14 +17,14 @@ var mongoose    = require( 'mongoose' ),
             type        : String,
             required    : true
         },
-        network         : {
-            type        : mongoose.Schema.Types.ObjectId,
-            ref         : 'Network',
-            required    : true
-        },
         pass            : {
             type        : String,
             required    : false
+        },
+        school          : {
+            type        : mongoose.Schema.Types.ObjectId,
+            ref         : 'School',
+            required    : true
         },
         type            : {
             type        : Number,
