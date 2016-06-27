@@ -26,6 +26,40 @@ router.post( '/', function ( req, res, next ) {
     }
 });
 
+router.put( '/:id', function ( req, res, next ) {
+    var updated = function ( err, school ) {
+        if ( err ) {
+            err         = new Error( 'Invalid school data' );
+            err.status  = 403;
+            return next( err );
+        }
+
+        res.json( school );
+    };
+
+    School.findById( req.params.id, function ( err, school ) {
+        if ( err ) {
+            err         = new Error( 'Invalid school id' );
+            err.status  = 404;
+
+            return next( err );
+        } else if ( req.session.access_level != 0 && ( req.session.access_level != 1 && req.session.school != school.id ) ) {
+            err         = new Error( 'Permission denied' );
+            err.status  = 401;
+
+            next( err );
+        } else {
+            for ( var key in req.body ) {
+                if ( key == "creation_date" ) continue;
+
+                school[key]   = req.body[key];
+            }
+
+            school.save( updated );
+        }
+    });
+});
+
 router.delete( '/:id', function ( req, res, next ) {
     School.findById( req.params.id, function ( err, school ) {
         if ( err || !school ) {

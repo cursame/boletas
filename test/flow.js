@@ -62,6 +62,21 @@ describe( 'Server Flow', function () {
             });
     });
 
+    it ( 'updated the school record created', function ( done ) {
+        request( server )
+            .put( '/schools/' + school_id )
+            .send({ name : 'UnitTestSchoolModified', settings : { open_features : false }, session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                assert.equal( 'UnitTestSchoolModified', res.body.name );
+                assert.equal( false, res.body.settings.open_features );
+                done();
+            });
+    });
+
     it ( 'removes the school record created', function ( done ) {
         request( server )
             .delete( '/schools/' + school_id )
