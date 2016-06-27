@@ -5,9 +5,17 @@ var mongoose        = require( 'mongoose' ),
             required    : true,
             default     : Date.now
         },
+        features        : {
+            type        : Array,
+            required    : false
+        },
         name            : {
             type        : String,
             required    : true
+        },
+        settings        : {
+            type        : Object,
+            required    : false
         }
     });
 

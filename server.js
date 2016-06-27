@@ -2,6 +2,7 @@ var express         = require( 'express' ),
     app             = express(),
     debug           = require( 'debug' )( 'app' ),
     error           = require( './lib/error' ),
+    session         = require( './lib/session' ),
     start           = require( './lib/start' );
 
 // Set the PORT and ENV variables and start the server
@@ -11,10 +12,15 @@ app.set( 'env', process.env.ENV || 'development' );
 start.launch( app );
 
 var applications    = require( './routers/applications' ),
+    schools         = require( './routers/schools' ),
     sessions        = require( './routers/sessions' );
 
 app.use( '/applications', applications );
 app.use( '/sessions', sessions );
+
+app.use( session.validate );
+
+app.use( '/schools', schools );
 
 app.use( error.notFound );
 app.use( error.handler );
