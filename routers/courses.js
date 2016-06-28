@@ -28,6 +28,38 @@ router.post( '/', function ( req, res, next ) {
     }
 });
 
+router.put( '/:id', function ( req, res, next ) {
+    var updated = function ( err, course ) {
+        if ( err ) {
+            err         = new Error( 'Invalid course data' );
+            err.status  = 403;
+            return next( err );
+        }
+
+        res.json( course );
+    };
+
+    Course.findById( req.params.id, function ( err, course ) {
+        if ( err ) {
+            err         = new Error( 'Invalid course id' );
+            err.status  = 404;
+
+            return next( err );
+        } else if ( req.session.access_level > 1 ) {
+            err         = new Error( 'Permission denied' );
+            err.status  = 401;
+
+            next( err );
+        } else {
+            for ( var key in req.body ) {
+                course[key]   = req.body[key];
+            }
+
+            course.save( updated );
+        }
+    });
+});
+
 router.delete( '/:id', function ( req, res, next ) {
     Course.findById( req.params.id, function ( err, course ) {
         if ( err || !course ) {

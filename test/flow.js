@@ -337,6 +337,20 @@ describe( 'Server Flow', function () {
             .expect( 400, done );
     });
 
+    it ( 'gets a 404 error when attempting to update and unexisting course', function ( done ) {
+        request( server )
+            .put( '/courses/invalid_id' )
+            .send({ name : 'UnitTestModified', session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'updates a course record in the system', function ( done ) {
+        request( server )
+            .put( '/courses/' + course_id )
+            .send({ name : 'UnitTestModified', session : session })
+            .expect( 200, done );
+    });
+
     it ( 'gets a 404 error when attempting to remove an unexisting course record', function ( done ) {
         request( server )
             .delete( '/courses/invalid_id' )
