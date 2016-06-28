@@ -26,6 +26,38 @@ router.post( '/', function ( req, res, next ) {
     }
 });
 
+router.put( '/:id', function ( req, res, next ) {
+    var updated = function ( err, group ) {
+        if ( err ) {
+            err         = new Error( 'Invalid group data' );
+            err.status  = 403;
+            return next( err );
+        }
+
+        res.json( group );
+    };
+
+    Group.findById( req.params.id, function ( err, group ) {
+        if ( err ) {
+            err         = new Error( 'Invalid group id' );
+            err.status  = 404;
+
+            return next( err );
+        } else if ( req.session.access_level != 0 && ( req.session.access_level != 1 && req.session.school != group.school ) ) {
+            err         = new Error( 'Permission denied' );
+            err.status  = 401;
+
+            next( err );
+        } else {
+            for ( var key in req.body ) {
+                group[key]   = req.body[key];
+            }
+
+            group.save( updated );
+        }
+    });
+});
+
 router.delete( '/:id', function ( req, res, next ) {
     Group.findById( req.params.id, function ( err, group ) {
         if ( err || !group ) {

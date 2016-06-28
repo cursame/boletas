@@ -366,6 +366,13 @@ describe( 'Server Flow', function () {
             });
     });
 
+    it ( 'updates a group record in the system', function ( done ) {
+        request( server )
+            .put( '/groups/' + group_id )
+            .send({ name : 'UnitTestModified', session : session })
+            .expect( 200, done );
+    });
+
     it ( 'creates a course object in the database', function ( done ) {
         request( server )
             .post( '/courses' )
