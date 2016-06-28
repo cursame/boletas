@@ -1,5 +1,6 @@
 var express     = require( 'express' ),
     Group       = require( '../models/group' ),
+    Utils       = require( '../lib/utils' ),
     router      = express.Router(),
     _getRefs    = function () {
         return [
@@ -13,6 +14,12 @@ var express     = require( 'express' ),
             }
         ];
     };
+
+router.get( '/', function ( req, res, next ) {
+    var filters     = [ '_id', 'administrator', 'name', 'school' ];
+
+    Utils.paginate( Group, filters, _getRefs(), req, res, next );
+});
 
 router.get( '/:id', function ( req, res, next ) {
     var cursor      = Group.findById( req.params.id ),
