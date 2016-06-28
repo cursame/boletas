@@ -809,6 +809,63 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'gets a 404 error when attempting to retrieve an unexisting grade record', function ( done ) {
+        request( server )
+            .get( '/grades/invalid_id' )
+            .send({ session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'retrieves the grade by id', function ( done ) {
+        request( server )
+            .get( '/grades/' + grade_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'course' );
+                res.body.should.have.property( 'features' );
+                res.body.should.have.property( 'grade' );
+                res.body.should.have.property( 'period' );
+                res.body.should.have.property( 'student' );
+                res.body.should.have.property( 'teacher' );
+
+                assert.equal( 'string', typeof res.body.course );
+                assert.equal( 'string', typeof res.body.period );
+                assert.equal( 'string', typeof res.body.student );
+                assert.equal( 'string', typeof res.body.teacher );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded grade record by id', function ( done ) {
+        request( server )
+            .get( '/grades/' + grade_id + '?expanded=true' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'course' );
+                res.body.should.have.property( 'features' );
+                res.body.should.have.property( 'grade' );
+                res.body.should.have.property( 'period' );
+                res.body.should.have.property( 'student' );
+                res.body.should.have.property( 'teacher' );
+
+                assert.equal( 'object', typeof res.body.course );
+                assert.equal( 'object', typeof res.body.period );
+                assert.equal( 'object', typeof res.body.student );
+                assert.equal( 'object', typeof res.body.teacher );
+                done();
+            });
+    });
+
     it ( 'gets a 404 error when attempting to remove an unexisting grade record', function ( done ) {
         request( server )
             .delete( '/grades/invalid_id' )
