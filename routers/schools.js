@@ -1,6 +1,13 @@
 var express     = require( 'express' ),
     School      = require( '../models/school' ),
+    Utils       = require( '../lib/utils' ),
     router      = express.Router();
+
+router.get( '/', function ( req, res, next ) {
+    var filters     = [ '_id', 'creation_date', 'name' ];
+
+    Utils.paginate( School, filters, [], req, res, next );
+});
 
 router.get( '/:id', function ( req, res, next ) {
     School.findById( req.params.id, function ( err, school ) {

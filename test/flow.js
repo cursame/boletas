@@ -77,6 +77,26 @@ describe( 'Server Flow', function () {
             });
     });
 
+    it ( 'retrieves a list of schools from the database', function ( done ) {
+        request( server )
+            .get( '/schools' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                done();
+            });
+    });
+
     it ( 'retrieves the school record by id', function ( done ) {
         request( server )
             .get( '/schools/' + school_id )
