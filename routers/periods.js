@@ -27,6 +27,38 @@ router.post( '/', function ( req, res, next ) {
     }
 });
 
+router.put( '/:id', function ( req, res, next ) {
+    var updated = function ( err, period ) {
+        if ( err ) {
+            err         = new Error( 'Invalid period data' );
+            err.status  = 403;
+            return next( err );
+        }
+
+        res.json( period );
+    };
+
+    Period.findById( req.params.id, function ( err, period ) {
+        if ( err ) {
+            err         = new Error( 'Invalid period id' );
+            err.status  = 404;
+
+            return next( err );
+        } else if ( req.session.access_level > 1 ) {
+            err         = new Error( 'Permission denied' );
+            err.status  = 401;
+
+            next( err );
+        } else {
+            for ( var key in req.body ) {
+                period[key]   = req.body[key];
+            }
+
+            period.save( updated );
+        }
+    });
+});
+
 router.delete( '/:id', function ( req, res, next ) {
     Period.findById( req.params.id, function ( err, period ) {
         if ( err || !period ) {
