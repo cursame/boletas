@@ -1,6 +1,42 @@
 var express     = require( 'express' ),
     Period      = require( '../models/period' ),
-    router      = express.Router();
+    router      = express.Router(),
+    _getRefs    = function () {
+        return [
+            {
+                field   : 'group',
+                select  : 'name'
+            },
+            {
+                field   : 'school',
+                select  : 'features name settings'
+            }
+        ];
+    };
+
+router.get( '/:id', function ( req, res, next ) {
+    var cursor      = Period.findById( req.params.id ),
+        callback    = function ( err, period ) {
+            if ( err || !period ) {
+                err         = new Error( 'Invalid period id' );
+                err.status  = 404;
+                next( err );
+            } else {
+                res.json( period );
+            }
+        };
+
+    if ( req.query.expanded && req.query.expanded === 'true' ) {
+        var refs    = _getRefs();
+        for ( var i = 0; i < refs.length; i++ ) {
+            cursor.populate( refs[i].field, refs[i].select );
+        }
+
+        cursor.exec( callback );
+    } else {
+        cursor.exec( callback )
+    }
+});
 
 router.post( '/', function ( req, res, next ) {
     if ( req.session.access_level > 1 ) {

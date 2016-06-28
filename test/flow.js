@@ -657,6 +657,55 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'gets a 404 error when attempting to retrieve an unexisting period record', function ( done ) {
+        request( server )
+            .get( '/periods/invalid_id' )
+            .send({ session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'retrieves the period by id', function ( done ) {
+        request( server )
+            .get( '/periods/' + period_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'due_date' );
+                res.body.should.have.property( 'group' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+
+                assert.equal( 'string', typeof res.body.group );
+                assert.equal( 'string', typeof res.body.school );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded period record by id', function ( done ) {
+        request( server )
+            .get( '/periods/' + period_id + '?expanded=true' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'due_date' );
+                res.body.should.have.property( 'group' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+
+                assert.equal( 'object', typeof res.body.group );
+                assert.equal( 'object', typeof res.body.school );
+                done();
+            });
+    });
+
     it ( 'removes the period record created', function ( done ) {
         request( server )
             .delete( '/periods/' + period_id )
