@@ -2,6 +2,19 @@ var express     = require( 'express' ),
     School      = require( '../models/school' ),
     router      = express.Router();
 
+router.get( '/:id', function ( req, res, next ) {
+    School.findById( req.params.id, function ( err, school ) {
+        if ( err || !school ) {
+            err         = new Error( 'Invalid school id' );
+            err.status  = 404;
+
+            next( err );
+        } else {
+            res.json( school );
+        }
+    });
+});
+
 router.post( '/', function ( req, res, next ) {
     if ( req.session.access_level != 0 ) {
         var err     = new Error( 'Permission denied' );
