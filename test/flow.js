@@ -373,6 +373,53 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'gets a 404 error when attempting to retrieve an unexisting group record', function ( done ) {
+        request( server )
+            .get( '/groups/invalid_id' )
+            .send({ session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'retrieves the group by id', function ( done ) {
+        request( server )
+            .get( '/groups/' + group_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'administrator' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+
+                assert.equal( 'string', typeof res.body.administrator );
+                assert.equal( 'string', typeof res.body.school );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded group record by id', function ( done ) {
+        request( server )
+            .get( '/groups/' + group_id + '?expanded=true' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'administrator' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+
+                assert.equal( 'object', typeof res.body.administrator );
+                assert.equal( 'object', typeof res.body.school );
+                done();
+            });
+    });
+
     it ( 'creates a course object in the database', function ( done ) {
         request( server )
             .post( '/courses' )
