@@ -4,19 +4,29 @@ var assert      = require( 'assert' ),
     server      = require( '../server' );
 
 describe( 'Server Flow', function () {
-    var coordinator     = {
+    var administrator       = {
+            email   : 'administrator@unitest.com',
+            name    : 'Administrator Unit Test',
+            pass    : 'administrator',
+            type    : 2
+        },
+        administrator_id    = '',
+        coordinator         = {
             email   : 'coordinator@unitest.com',
             name    : 'John Unit Test',
             pass    : 'coordinator',
             type    : 1
         },
-        coordinator_id  = '',
-        course          = {
+        coordinator_id      = '',
+        course              = {
             name        : 'UnitTestMath',
             students    : []
         },
-        course_id       = '',
-        school          = {
+        course_id           = '',
+        group               = {
+            name        : 'UnitTestA'
+        },
+        school              = {
             features    : [
                 {
                     name        : 'Presentation',
@@ -32,23 +42,23 @@ describe( 'Server Flow', function () {
                 open_features   : true
             }
         },
-        school_id       = '',
-        session         = '',
-        student         = {
+        school_id           = '',
+        session             = '',
+        student             = {
             email   : 'student@unitest.com',
             name    : 'Student Unit Test',
             pass    : 'student',
-            type    : 3
+            type    : 4
         },
-        student_id      = '',
-        teacher         = {
+        student_id          = '',
+        teacher             = {
             email   : 'teacher@unitest.com',
             name    : 'Teacher Unit Test',
             pass    : 'teacher',
-            type    : 2
+            type    : 3
         },
-        teacher_id      = '',
-        user            = {
+        teacher_id          = '',
+        user                = {
             email   : 'admin@cursa.me',
             pass    : 'admin'
         };
@@ -63,8 +73,10 @@ describe( 'Server Flow', function () {
                 }
 
                 session                 = res.body.session;
+                administrator.session   = res.body.session;
                 coordinator.session     = res.body.session;
                 course.session          = res.body.session;
+                group.session           = res.body.session;
                 school.session          = res.body.session;
                 student.session         = res.body.session;
                 teacher.session         = res.body.session;
@@ -87,11 +99,13 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'settings' );
 
-                school_id           = res.body._id;
-                coordinator.school  = res.body._id;
-                course.school       = res.body._id;
-                student.school      = res.body._id;
-                teacher.school      = res.body._id;
+                school_id               = res.body._id;
+                administrator.school    = res.body._id;
+                coordinator.school      = res.body._id;
+                course.school           = res.body._id;
+                group.school            = res.body._id;
+                student.school          = res.body._id;
+                teacher.school          = res.body._id;
                 done();
             });
     });
@@ -168,6 +182,29 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'type' );
 
                 coordinator_id  = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'creates an administrator user in the database', function ( done ) {
+        request( server )
+            .post( '/users' )
+            .send( administrator )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'creation_date' );
+                res.body.should.have.property( 'email' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'pass' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'type' );
+
+                administrator_id    = res.body._id;
+                group.administrator = res.body._id;
                 done();
             });
     });
@@ -306,6 +343,25 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'type' );
 
                 assert.equal( 'object', typeof res.body.school );
+                done();
+            });
+    });
+
+    it ( 'creates a group object in the database', function ( done ) {
+        request( server )
+            .post( '/groups' )
+            .send( group )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'administrator' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+
+                group_id    = res.body._id;
                 done();
             });
     });
@@ -456,6 +512,13 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'removes the group record created', function ( done ) {
+        request( server )
+            .delete( '/groups/' + group_id )
+            .send({ session : session })
+            .expect( 200, done );
+    });
+
     it ( 'removes the student user created', function ( done ) {
         request( server )
             .delete( '/users/' + student_id )
@@ -466,6 +529,13 @@ describe( 'Server Flow', function () {
     it ( 'removes the teacher user created', function ( done ) {
         request( server )
             .delete( '/users/' + teacher_id )
+            .send({ session : session })
+            .expect( 200, done );
+    });
+
+    it ( 'removes the administrator user created', function ( done ) {
+        request( server )
+            .delete( '/users/' + administrator_id )
             .send({ session : session })
             .expect( 200, done );
     });
