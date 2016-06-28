@@ -809,6 +809,50 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'retrieves a list of grades from the database', function ( done ) {
+        request( server )
+            .get( '/grades' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded list of grades from the database', function ( done ) {
+        request( server )
+            .get( '/grades?expanded=true' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                assert.equal( 'object', typeof res.body.results[0].course );
+                assert.equal( 'object', typeof res.body.results[0].period );
+                assert.equal( 'object', typeof res.body.results[0].student );
+                assert.equal( 'object', typeof res.body.results[0].teacher );
+                done();
+            });
+    });
+
     it ( 'gets a 404 error when attempting to retrieve an unexisting grade record', function ( done ) {
         request( server )
             .get( '/grades/invalid_id' )

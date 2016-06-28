@@ -1,5 +1,6 @@
 var express     = require( 'express' ),
     Grade       = require( '../models/grade' ),
+    Utils       = require( '../lib/utils' ),
     router      = express.Router(),
     _getRefs    = function () {
         return [
@@ -21,6 +22,12 @@ var express     = require( 'express' ),
             }
         ];
     };
+
+router.get( '/', function ( req, res, next ) {
+    var filters     = [ '_id', 'course', 'period', 'student', 'teacher' ];
+
+    Utils.paginate( Grade, filters, _getRefs(), req, res, next );
+});
 
 router.get( '/:id', function ( req, res, next ) {
     var cursor      = Grade.findById( req.params.id ),
