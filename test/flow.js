@@ -26,6 +26,11 @@ describe( 'Server Flow', function () {
         group               = {
             name        : 'UnitTestA'
         },
+        period              = {
+            due_date    : Date.now(),
+            name        : 'First Unit Test'
+        },
+        period_id           = '',
         school              = {
             features    : [
                 {
@@ -77,6 +82,7 @@ describe( 'Server Flow', function () {
                 coordinator.session     = res.body.session;
                 course.session          = res.body.session;
                 group.session           = res.body.session;
+                period.session          = res.body.session;
                 school.session          = res.body.session;
                 student.session         = res.body.session;
                 teacher.session         = res.body.session;
@@ -104,6 +110,7 @@ describe( 'Server Flow', function () {
                 coordinator.school      = res.body._id;
                 course.school           = res.body._id;
                 group.school            = res.body._id;
+                period.school           = res.body._id;
                 student.school          = res.body._id;
                 teacher.school          = res.body._id;
                 done();
@@ -363,6 +370,7 @@ describe( 'Server Flow', function () {
 
                 group_id        = res.body._id;
                 course.group    = res.body._id;
+                period.group    = res.body._id;
                 done();
             });
     });
@@ -606,6 +614,40 @@ describe( 'Server Flow', function () {
             .delete( '/courses/invalid_id' )
             .send({ session : session })
             .expect( 404, done );
+    });
+
+    it ( 'gets a 400 error when attempting to create an invalid period record', function ( done ) {
+        request( server )
+            .post( '/periods' )
+            .send({ name : 'InvalidTestPeriod', session : session })
+            .expect( 400, done );
+    });
+
+    it ( 'creates a period object in the database', function ( done ) {
+        request( server )
+            .post( '/periods' )
+            .send( period )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'due_date' );
+                res.body.should.have.property( 'group' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+
+                period_id   = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'removes the period record created', function ( done ) {
+        request( server )
+            .delete( '/periods/' + period_id )
+            .send({ session : session })
+            .expect( 200, done );
     });
 
     it ( 'removes the course record created', function ( done ) {
