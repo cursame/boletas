@@ -361,7 +361,8 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
 
-                group_id    = res.body._id;
+                group_id        = res.body._id;
+                course.group    = res.body._id;
                 done();
             });
     });
@@ -472,6 +473,7 @@ describe( 'Server Flow', function () {
                 }
 
                 res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'group' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
                 res.body.should.have.property( 'students' );
@@ -530,7 +532,7 @@ describe( 'Server Flow', function () {
             });
     });
 
-    it ( 'retrieves an expanded list of coordinator courses from the database', function ( done ) {
+    it ( 'retrieves an expanded list of courses from the database', function ( done ) {
         request( server )
             .get( '/courses?expanded=true&school=' + school_id )
             .send({ session : session })
@@ -546,6 +548,7 @@ describe( 'Server Flow', function () {
                 res.body.pagination.should.have.property( 'total' );
 
                 assert.equal( true, Array.isArray( res.body.results ) );
+                assert.equal( 'object', typeof res.body.results[0].group );
                 assert.equal( 'object', typeof res.body.results[0].school );
                 assert.equal( 'object', typeof res.body.results[0].teacher );
                 done();
@@ -562,11 +565,13 @@ describe( 'Server Flow', function () {
                 }
 
                 res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'group' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
                 res.body.should.have.property( 'students' );
                 res.body.should.have.property( 'teacher' );
 
+                assert.equal( 'string', typeof res.body.group );
                 assert.equal( 'string', typeof res.body.school );
                 assert.equal( 'string', typeof res.body.teacher );
                 done();
@@ -583,11 +588,13 @@ describe( 'Server Flow', function () {
                 }
 
                 res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'group' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
                 res.body.should.have.property( 'students' );
                 res.body.should.have.property( 'teacher' );
 
+                assert.equal( 'object', typeof res.body.group );
                 assert.equal( 'object', typeof res.body.school );
                 assert.equal( 'object', typeof res.body.teacher );
                 done();

@@ -4,6 +4,11 @@ var mongoose        = require( 'mongoose' ),
             type        : Array,
             required    : false
         },
+        group           : {
+            type        : mongoose.Schema.Types.ObjectId,
+            ref         : 'Group',
+            required    : true
+        },
         name            : {
             type        : String,
             required    : true,

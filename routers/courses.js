@@ -5,6 +5,10 @@ var express     = require( 'express' ),
     _getRefs    = function () {
         return [
             {
+                field   : 'group',
+                select  : 'name'
+            },
+            {
                 field   : 'school',
                 select  : 'features name settings'
             },
@@ -58,6 +62,7 @@ router.post( '/', function ( req, res, next ) {
     } else {
         Course.create({
             features    : req.body.features,
+            group       : req.body.group,
             name        : req.body.name,
             school      : req.body.school,
             students    : req.body.students,
