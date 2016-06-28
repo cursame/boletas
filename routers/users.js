@@ -28,6 +28,40 @@ router.post( '/', function ( req, res, next ) {
     }
 });
 
+router.put( '/:id', function ( req, res, next ) {
+    var updated = function ( err, user ) {
+        if ( err ) {
+            err         = new Error( 'Invalid user data' );
+            err.status  = 403;
+            return next( err );
+        }
+
+        res.json( user );
+    };
+
+    User.findById( req.params.id, function ( err, user ) {
+        if ( err ) {
+            err         = new Error( 'Invalid user id' );
+            err.status  = 404;
+
+            return next( err );
+        } else if ( req.session.access_level > 1 && req.session.user != user.id ) {
+            err         = new Error( 'Permission denied' );
+            err.status  = 401;
+
+            next( err );
+        } else {
+            for ( var key in req.body ) {
+                if ( key == 'creation_date' || key == 'pass' ) continue;
+
+                user[key]   = req.body[key];
+            }
+
+            user.save( updated );
+        }
+    });
+});
+
 router.delete( '/:id', function ( req, res, next ) {
     User.findById( req.params.id, function ( err, user ) {
         if ( err || !user ) {

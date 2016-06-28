@@ -147,6 +147,13 @@ describe( 'Server Flow', function () {
             });
     });
 
+    it ( 'updates the coordinator user record created', function ( done ) {
+        request( server )
+            .put( '/users/' + coordinator_id )
+            .send({ name : 'John Unit Modified', session : session })
+            .expect( 200, done );
+    });
+
     it ( 'removes the coordinator user created', function ( done ) {
         request( server )
             .delete( '/users/' + coordinator_id )
