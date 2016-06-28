@@ -4,7 +4,13 @@ var assert      = require( 'assert' ),
     server      = require( '../server' );
 
 describe( 'Server Flow', function () {
-    var session         = '',
+    var coordinator     = {
+            email   : 'coordinator@unitest.com',
+            name    : 'John Unit Test',
+            pass    : 'coordinator',
+            type    : 1
+        },
+        coordinator_id  = '',
         school          = {
             features    : [
                 {
@@ -22,17 +28,25 @@ describe( 'Server Flow', function () {
             }
         },
         school_id       = '',
+        session         = '',
+        student         = {
+            email   : 'student@unitest.com',
+            name    : 'Student Unit Test',
+            pass    : 'student',
+            type    : 3
+        },
+        student_id      = '',
+        teacher         = {
+            email   : 'teacher@unitest.com',
+            name    : 'Teacher Unit Test',
+            pass    : 'teacher',
+            type    : 2
+        },
+        teacher_id      = '',
         user            = {
             email   : 'admin@cursa.me',
             pass    : 'admin'
-        },
-        coordinator     = {
-            email   : 'coordinator@unitest.com',
-            name    : 'John Unit Test',
-            pass    : 'coordinator',
-            type    : 1
-        },
-        coordinator_id  = '';
+        };
 
     it ( 'creates a super administrator user session', function ( done ) {
         request( server )
@@ -44,8 +58,10 @@ describe( 'Server Flow', function () {
                 }
 
                 session                 = res.body.session;
-                school.session          = res.body.session;
                 coordinator.session     = res.body.session;
+                school.session          = res.body.session;
+                student.session         = res.body.session;
+                teacher.session         = res.body.session;
                 done();
             });
     });
@@ -67,6 +83,8 @@ describe( 'Server Flow', function () {
 
                 school_id           = res.body._id;
                 coordinator.school  = res.body._id;
+                student.school      = res.body._id;
+                teacher.school      = res.body._id;
                 done();
             });
     });
@@ -143,6 +161,50 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'type' );
 
                 coordinator_id  = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'creates a teacher user in the database', function ( done ) {
+        request( server )
+            .post( '/users' )
+            .send( teacher )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'creation_date' );
+                res.body.should.have.property( 'email' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'pass' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'type' );
+
+                teacher_id      = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'creates a student user in the database', function ( done ) {
+        request( server )
+            .post( '/users' )
+            .send( student )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'creation_date' );
+                res.body.should.have.property( 'email' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'pass' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'type' );
+
+                student_id      = res.body._id;
                 done();
             });
     });
@@ -237,6 +299,20 @@ describe( 'Server Flow', function () {
                 assert.equal( 'object', typeof res.body.school );
                 done();
             });
+    });
+
+    it ( 'removes the student user created', function ( done ) {
+        request( server )
+            .delete( '/users/' + student_id )
+            .send({ session : session })
+            .expect( 200, done );
+    });
+
+    it ( 'removes the teacher user created', function ( done ) {
+        request( server )
+            .delete( '/users/' + teacher_id )
+            .send({ session : session })
+            .expect( 200, done );
     });
 
     it ( 'removes the coordinator user created', function ( done ) {
