@@ -11,6 +11,11 @@ describe( 'Server Flow', function () {
             type    : 1
         },
         coordinator_id  = '',
+        course          = {
+            name        : 'UnitTestMath',
+            students    : []
+        },
+        course_id       = '',
         school          = {
             features    : [
                 {
@@ -59,6 +64,7 @@ describe( 'Server Flow', function () {
 
                 session                 = res.body.session;
                 coordinator.session     = res.body.session;
+                course.session          = res.body.session;
                 school.session          = res.body.session;
                 student.session         = res.body.session;
                 teacher.session         = res.body.session;
@@ -83,6 +89,7 @@ describe( 'Server Flow', function () {
 
                 school_id           = res.body._id;
                 coordinator.school  = res.body._id;
+                course.school       = res.body._id;
                 student.school      = res.body._id;
                 teacher.school      = res.body._id;
                 done();
@@ -183,6 +190,7 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'type' );
 
                 teacher_id      = res.body._id;
+                course.teacher  = res.body._id;
                 done();
             });
     });
@@ -205,6 +213,7 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'type' );
 
                 student_id      = res.body._id;
+                course.students.push( res.body._id );
                 done();
             });
     });
@@ -299,6 +308,47 @@ describe( 'Server Flow', function () {
                 assert.equal( 'object', typeof res.body.school );
                 done();
             });
+    });
+
+    it ( 'creates a course object in the database', function ( done ) {
+        request( server )
+            .post( '/courses' )
+            .send( course )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'students' );
+                res.body.should.have.property( 'teacher' );
+
+                course_id   = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'gets a 400 error when attempting to duplicate a course record', function ( done ) {
+        request( server )
+            .post( '/courses' )
+            .send( course )
+            .expect( 400, done );
+    });
+
+    it ( 'gets a 404 error when attempting to remove an unexisting course record', function ( done ) {
+        request( server )
+            .delete( '/courses/invalid_id' )
+            .send({ session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'removes the course record created', function ( done ) {
+        request( server )
+            .delete( '/courses/' + course_id )
+            .send({ session : session })
+            .expect( 200, done );
     });
 
     it ( 'removes the student user created', function ( done ) {

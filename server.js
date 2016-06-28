@@ -12,6 +12,7 @@ app.set( 'env', process.env.ENV || 'development' );
 start.launch( app );
 
 var applications    = require( './routers/applications' ),
+    courses         = require( './routers/courses' ),
     schools         = require( './routers/schools' ),
     sessions        = require( './routers/sessions' ),
     users           = require( './routers/users' );
@@ -21,6 +22,7 @@ app.use( '/sessions', sessions );
 
 app.use( session.validate );
 
+app.use( '/courses', courses );
 app.use( '/schools', schools );
 app.use( '/users', users );
 
