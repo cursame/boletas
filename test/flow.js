@@ -23,6 +23,20 @@ describe( 'Server Flow', function () {
             students    : []
         },
         course_id           = '',
+        grade               = {
+            features    : [
+                {
+                    name    : 'Presentation',
+                    grade   : 8
+                },
+                {
+                    name    : 'Written Test',
+                    grade   : 10
+                }
+            ],
+            grade       : 8.6
+        },
+        grade_id            = '',
         group               = {
             name        : 'UnitTestA'
         },
@@ -81,6 +95,7 @@ describe( 'Server Flow', function () {
                 administrator.session   = res.body.session;
                 coordinator.session     = res.body.session;
                 course.session          = res.body.session;
+                grade.session           = res.body.session;
                 group.session           = res.body.session;
                 period.session          = res.body.session;
                 school.session          = res.body.session;
@@ -235,6 +250,7 @@ describe( 'Server Flow', function () {
 
                 teacher_id      = res.body._id;
                 course.teacher  = res.body._id;
+                grade.teacher   = res.body._id;
                 done();
             });
     });
@@ -257,6 +273,7 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'type' );
 
                 student_id      = res.body._id;
+                grade.student   = res.body._id;
                 course.students.push( res.body._id );
                 done();
             });
@@ -487,7 +504,8 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'students' );
                 res.body.should.have.property( 'teacher' );
 
-                course_id   = res.body._id;
+                course_id       = res.body._id;
+                grade.course    = res.body._id;
                 done();
             });
     });
@@ -638,7 +656,8 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
 
-                period_id   = res.body._id;
+                period_id       = res.body._id;
+                grade.period    = res.body._id;
                 done();
             });
     });
@@ -746,6 +765,48 @@ describe( 'Server Flow', function () {
                 assert.equal( 'object', typeof res.body.school );
                 done();
             });
+    });
+
+    it ( 'gets a 400 error when attempting to create an invalid grade record', function ( done ) {
+        request( server )
+            .post( '/grades' )
+            .send({ grade : 10, session : session })
+            .expect( 400, done );
+    });
+
+    it ( 'creates a grade object in the database', function ( done ) {
+        request( server )
+            .post( '/grades' )
+            .send( grade )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'course' );
+                res.body.should.have.property( 'features' );
+                res.body.should.have.property( 'period' );
+                res.body.should.have.property( 'student' );
+                res.body.should.have.property( 'teacher' );
+
+                grade_id    = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'gets a 404 error when attempting to remove an unexisting grade record', function ( done ) {
+        request( server )
+            .delete( '/grades/invalid_id' )
+            .send({ session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'removes the grade record created', function ( done ) {
+        request( server )
+            .delete( '/grades/' + grade_id )
+            .send({ session : session })
+            .expect( 200, done );
     });
 
     it ( 'removes the period record created', function ( done ) {
