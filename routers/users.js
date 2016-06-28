@@ -1,5 +1,6 @@
 var express     = require( 'express' ),
     User        = require( '../models/user' ),
+    Utils       = require( '../lib/utils' ),
     router      = express.Router(),
     _getRefs    = function () {
         return [
@@ -9,6 +10,12 @@ var express     = require( 'express' ),
             }
         ];
     };
+
+router.get( '/', function ( req, res, next ) {
+    var filters     = [ '_id', 'creation_date', 'email', 'name', 'school', 'type' ];
+
+    Utils.paginate( User, filters, _getRefs(), req, res, next );
+});
 
 router.get( '/:id', function ( req, res, next ) {
     var cursor      = User.findById( req.params.id ),

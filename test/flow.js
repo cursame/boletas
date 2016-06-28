@@ -154,6 +154,47 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'retrieves a list of users from the database', function ( done ) {
+        request( server )
+            .get( '/users' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded list of coordinator users from the database', function ( done ) {
+        request( server )
+            .get( '/users?expanded=true&type=1' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                assert.equal( 'object', typeof res.body.results[0].school );
+                done();
+            });
+    });
+
     it ( 'retrieves the coordinator user by id', function ( done ) {
         request( server )
             .get( '/users/' + coordinator_id )
