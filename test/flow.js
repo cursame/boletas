@@ -351,6 +351,55 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'gets a 404 error when attempting to retrieve an unexisting course record', function ( done ) {
+        request( server )
+            .get( '/courses/invalid_id' )
+            .send({ session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'retrieves the course by id', function ( done ) {
+        request( server )
+            .get( '/courses/' + course_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'students' );
+                res.body.should.have.property( 'teacher' );
+
+                assert.equal( 'string', typeof res.body.school );
+                assert.equal( 'string', typeof res.body.teacher );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded course record by id', function ( done ) {
+        request( server )
+            .get( '/courses/' + course_id + '?expanded=true' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'students' );
+                res.body.should.have.property( 'teacher' );
+
+                assert.equal( 'object', typeof res.body.school );
+                assert.equal( 'object', typeof res.body.teacher );
+                done();
+            });
+    });
+
     it ( 'gets a 404 error when attempting to remove an unexisting course record', function ( done ) {
         request( server )
             .delete( '/courses/invalid_id' )

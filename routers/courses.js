@@ -1,6 +1,46 @@
 var express     = require( 'express' ),
     Course      = require( '../models/course' ),
-    router      = express.Router();
+    router      = express.Router(),
+    _getRefs    = function () {
+        return [
+            {
+                field   : 'school',
+                select  : 'features name settings'
+            },
+            {
+                field   : 'students',
+                select  : 'email name'
+            },
+            {
+                field   : 'teacher',
+                select  : 'email name'
+            }
+        ];
+    };
+
+router.get( '/:id', function ( req, res, next ) {
+    var cursor      = Course.findById( req.params.id ),
+        callback    = function ( err, course ) {
+            if ( err || !course ) {
+                err         = new Error( 'Invalid course id' );
+                err.status  = 404;
+                next( err );
+            } else {
+                res.json( course );
+            }
+        };
+
+    if ( req.query.expanded && req.query.expanded === 'true' ) {
+        var refs    = _getRefs();
+        for ( var i = 0; i < refs.length; i++ ) {
+            cursor.populate( refs[i].field, refs[i].select );
+        }
+
+        cursor.exec( callback );
+    } else {
+        cursor.exec( callback )
+    }
+});
 
 router.post( '/', function ( req, res, next ) {
     if ( req.session.access_level > 1 ) {
