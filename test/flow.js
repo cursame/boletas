@@ -358,6 +358,48 @@ describe( 'Server Flow', function () {
             .expect( 404, done );
     });
 
+    it ( 'retrieves a list of courses from the database', function ( done ) {
+        request( server )
+            .get( '/courses' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded list of coordinator courses from the database', function ( done ) {
+        request( server )
+            .get( '/courses?expanded=true&school=' + school_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                assert.equal( 'object', typeof res.body.results[0].school );
+                assert.equal( 'object', typeof res.body.results[0].teacher );
+                done();
+            });
+    });
+
     it ( 'retrieves the course by id', function ( done ) {
         request( server )
             .get( '/courses/' + course_id )

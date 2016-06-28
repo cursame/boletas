@@ -1,5 +1,6 @@
 var express     = require( 'express' ),
     Course      = require( '../models/course' ),
+    Utils       = require( '../lib/utils' ),
     router      = express.Router(),
     _getRefs    = function () {
         return [
@@ -17,6 +18,12 @@ var express     = require( 'express' ),
             }
         ];
     };
+
+router.get( '/', function ( req, res, next ) {
+    var filters     = [ '_id', 'name', 'school', 'students', 'teacher' ];
+
+    Utils.paginate( Course, filters, _getRefs(), req, res, next );
+});
 
 router.get( '/:id', function ( req, res, next ) {
     var cursor      = Course.findById( req.params.id ),
