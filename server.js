@@ -13,7 +13,8 @@ start.launch( app );
 
 var applications    = require( './routers/applications' ),
     schools         = require( './routers/schools' ),
-    sessions        = require( './routers/sessions' );
+    sessions        = require( './routers/sessions' ),
+    users           = require( './routers/users' );
 
 app.use( '/applications', applications );
 app.use( '/sessions', sessions );
@@ -21,6 +22,7 @@ app.use( '/sessions', sessions );
 app.use( session.validate );
 
 app.use( '/schools', schools );
+app.use( '/users', users );
 
 app.use( error.notFound );
 app.use( error.handler );

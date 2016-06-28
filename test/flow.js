@@ -4,8 +4,8 @@ var assert      = require( 'assert' ),
     server      = require( '../server' );
 
 describe( 'Server Flow', function () {
-    var session     = '',
-        school      = {
+    var session         = '',
+        school          = {
             features    : [
                 {
                     name        : 'Presentation',
@@ -21,11 +21,18 @@ describe( 'Server Flow', function () {
                 open_features   : true
             }
         },
-        school_id   = '',
-        user        = {
+        school_id       = '',
+        user            = {
             email   : 'admin@cursa.me',
             pass    : 'admin'
-        };
+        },
+        coordinator     = {
+            email   : 'coordinator@unitest.com',
+            name    : 'John Unit Test',
+            pass    : 'coordinator',
+            type    : 1
+        },
+        coordinator_id  = '';
 
     it ( 'creates a super administrator user session', function ( done ) {
         request( server )
@@ -36,8 +43,9 @@ describe( 'Server Flow', function () {
                     throw err;
                 }
 
-                session         = res.body.session;
-                school.session  = res.body.session;
+                session                 = res.body.session;
+                school.session          = res.body.session;
+                coordinator.session     = res.body.session;
                 done();
             });
     });
@@ -57,7 +65,8 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'settings' );
 
-                school_id   = res.body._id;
+                school_id           = res.body._id;
+                coordinator.school  = res.body._id;
                 done();
             });
     });
@@ -114,6 +123,35 @@ describe( 'Server Flow', function () {
 
                 done();
             });
+    });
+
+    it ( 'creates a coordinator user in the database', function ( done ) {
+        request( server )
+            .post( '/users' )
+            .send( coordinator )
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'creation_date' );
+                res.body.should.have.property( 'email' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'pass' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'type' );
+
+                coordinator_id  = res.body._id;
+                done();
+            });
+    });
+
+    it ( 'removes the coordinator user created', function ( done ) {
+        request( server )
+            .delete( '/users/' + coordinator_id )
+            .send({ session : session })
+            .expect( 200, done );
     });
 
     it ( 'removes the school record created', function ( done ) {
