@@ -154,6 +154,50 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'retrieves the coordinator user by id', function ( done ) {
+        request( server )
+            .get( '/users/' + coordinator_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'creation_date' );
+                res.body.should.have.property( 'email' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'pass' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'type' );
+
+                assert.equal( 'string', typeof res.body.school );
+                done();
+            });
+    });
+
+    it ( 'retrieves the expanded coordinator user by id', function ( done ) {
+        request( server )
+            .get( '/users/' + coordinator_id + '?expanded=true' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( '_id' );
+                res.body.should.have.property( 'creation_date' );
+                res.body.should.have.property( 'email' );
+                res.body.should.have.property( 'name' );
+                res.body.should.have.property( 'pass' );
+                res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'type' );
+
+                assert.equal( 'object', typeof res.body.school );
+                done();
+            });
+    });
+
     it ( 'removes the coordinator user created', function ( done ) {
         request( server )
             .delete( '/users/' + coordinator_id )

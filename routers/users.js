@@ -1,6 +1,38 @@
 var express     = require( 'express' ),
     User        = require( '../models/user' ),
-    router      = express.Router();
+    router      = express.Router(),
+    _getRefs    = function () {
+        return [
+            {
+                field   : 'school',
+                select  : 'features name settings'
+            }
+        ];
+    };
+
+router.get( '/:id', function ( req, res, next ) {
+    var cursor      = User.findById( req.params.id ),
+        callback    = function ( err, user ) {
+            if ( err || !user ) {
+                err         = new Error( 'Invalid user id' );
+                err.status  = 404;
+                next( err );
+            } else {
+                res.json( user );
+            }
+        };
+
+    if ( req.query.expanded && req.query.expanded === 'true' ) {
+        var refs    = _getRefs();
+        for ( var i = 0; i < refs.length; i++ ) {
+            cursor.populate( refs[i].field, refs[i].select );
+        }
+
+        cursor.exec( callback );
+    } else {
+        cursor.exec( callback )
+    }
+});
 
 router.post( '/', function ( req, res, next ) {
     if ( req.session.access_level > 1 ) {
