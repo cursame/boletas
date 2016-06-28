@@ -657,6 +657,48 @@ describe( 'Server Flow', function () {
             .expect( 200, done );
     });
 
+    it ( 'retrieves a list of periods from the database', function ( done ) {
+        request( server )
+            .get( '/periods' )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                done();
+            });
+    });
+
+    it ( 'retrieves an expanded list of periods from the database', function ( done ) {
+        request( server )
+            .get( '/periods?expanded=true&group=' + group_id )
+            .send({ session : session })
+            .end( function ( err, res ) {
+                if ( err ) {
+                    throw err;
+                }
+
+                res.body.should.have.property( 'results' );
+                res.body.should.have.property( 'pagination' );
+                res.body.pagination.should.have.property( 'page' );
+                res.body.pagination.should.have.property( 'per_page' );
+                res.body.pagination.should.have.property( 'total' );
+
+                assert.equal( true, Array.isArray( res.body.results ) );
+                assert.equal( 'object', typeof res.body.results[0].group );
+                assert.equal( 'object', typeof res.body.results[0].school );
+                done();
+            });
+    });
+
     it ( 'gets a 404 error when attempting to retrieve an unexisting period record', function ( done ) {
         request( server )
             .get( '/periods/invalid_id' )
