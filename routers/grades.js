@@ -29,6 +29,38 @@ router.post( '/', function ( req, res, next ) {
     }
 });
 
+router.put( '/:id', function ( req, res, next ) {
+    var updated = function ( err, grade ) {
+        if ( err ) {
+            err         = new Error( 'Invalid grade data' );
+            err.status  = 403;
+            return next( err );
+        }
+
+        res.json( grade );
+    };
+
+    Grade.findById( req.params.id, function ( err, grade ) {
+        if ( err ) {
+            err         = new Error( 'Invalid grade id' );
+            err.status  = 404;
+
+            return next( err );
+        } else if ( req.session.access_level > 1 ) {
+            err         = new Error( 'Permission denied' );
+            err.status  = 401;
+
+            next( err );
+        } else {
+            for ( var key in req.body ) {
+                grade[key]   = req.body[key];
+            }
+
+            grade.save( updated );
+        }
+    });
+});
+
 router.delete( '/:id', function ( req, res, next ) {
     Grade.findById( req.params.id, function ( err, grade ) {
         if ( err || !grade ) {

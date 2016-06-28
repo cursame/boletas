@@ -795,6 +795,20 @@ describe( 'Server Flow', function () {
             });
     });
 
+    it ( 'gets a 404 error when attempting to update and unexisting grade', function ( done ) {
+        request( server )
+            .put( '/grades/invalid_id' )
+            .send({ grade : 10, session : session })
+            .expect( 404, done );
+    });
+
+    it ( 'updates a grade record in the system', function ( done ) {
+        request( server )
+            .put( '/grades/' + grade_id )
+            .send({ grade : 8.5, session : session })
+            .expect( 200, done );
+    });
+
     it ( 'gets a 404 error when attempting to remove an unexisting grade record', function ( done ) {
         request( server )
             .delete( '/grades/invalid_id' )
