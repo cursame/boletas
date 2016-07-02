@@ -7,7 +7,7 @@ router.post( '/', function ( req, res, next ) {
     SessionHandler.login( req, function ( session ) {
         if ( session ) {
             res.json({
-                session         : Encrypt.encode( session.id ),
+                token           : Encrypt.encode( session.id ),
                 access_level    : session.access_level,
                 school          : session.school,
                 user            : session.user_id

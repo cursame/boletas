@@ -91,16 +91,16 @@ describe( 'Server Flow', function () {
                     throw err;
                 }
 
-                session                 = res.body.session;
-                administrator.session   = res.body.session;
-                coordinator.session     = res.body.session;
-                course.session          = res.body.session;
-                grade.session           = res.body.session;
-                group.session           = res.body.session;
-                period.session          = res.body.session;
-                school.session          = res.body.session;
-                student.session         = res.body.session;
-                teacher.session         = res.body.session;
+                session                 = res.body.token;
+                administrator.session   = res.body.token;
+                coordinator.session     = res.body.token;
+                course.session          = res.body.token;
+                grade.session           = res.body.token;
+                group.session           = res.body.token;
+                period.session          = res.body.token;
+                school.session          = res.body.token;
+                student.session         = res.body.token;
+                teacher.session         = res.body.token;
                 done();
             });
     });

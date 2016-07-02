@@ -45,9 +45,9 @@ describe( 'Sessions', function () {
                     throw err;
                 }
 
-                res.body.should.have.property( 'session' );
+                res.body.should.have.property( 'token' );
 
-                session     = res.body.session;
+                session     = res.body.token;
                 done();
             });
     });
