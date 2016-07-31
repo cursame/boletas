@@ -19,8 +19,7 @@ describe( 'Server Flow', function () {
         },
         coordinator_id      = '',
         course              = {
-            name        : 'UnitTestMath',
-            students    : []
+            name        : 'UnitTestMath'
         },
         course_id           = '',
         grade               = {
@@ -38,7 +37,8 @@ describe( 'Server Flow', function () {
         },
         grade_id            = '',
         group               = {
-            name        : 'UnitTestA'
+            name        : 'UnitTestA',
+            students    : []
         },
         period              = {
             due_date    : Date.now(),
@@ -274,7 +274,7 @@ describe( 'Server Flow', function () {
 
                 student_id      = res.body._id;
                 grade.student   = res.body._id;
-                course.students.push( res.body._id );
+                group.students.push( res.body._id );
                 done();
             });
     });
@@ -384,6 +384,7 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'administrator' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'students' );
 
                 group_id        = res.body._id;
                 course.group    = res.body._id;
@@ -461,6 +462,7 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'administrator' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
+                res.body.should.have.property( 'students' );
 
                 assert.equal( 'string', typeof res.body.administrator );
                 assert.equal( 'string', typeof res.body.school );
@@ -484,6 +486,7 @@ describe( 'Server Flow', function () {
 
                 assert.equal( 'object', typeof res.body.administrator );
                 assert.equal( 'object', typeof res.body.school );
+                assert.equal( 'object', typeof res.body.students[0] );
                 done();
             });
     });
@@ -501,7 +504,6 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'group' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
-                res.body.should.have.property( 'students' );
                 res.body.should.have.property( 'teacher' );
 
                 course_id       = res.body._id;
@@ -594,7 +596,6 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'group' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
-                res.body.should.have.property( 'students' );
                 res.body.should.have.property( 'teacher' );
 
                 assert.equal( 'string', typeof res.body.group );
@@ -617,7 +618,6 @@ describe( 'Server Flow', function () {
                 res.body.should.have.property( 'group' );
                 res.body.should.have.property( 'name' );
                 res.body.should.have.property( 'school' );
-                res.body.should.have.property( 'students' );
                 res.body.should.have.property( 'teacher' );
 
                 assert.equal( 'object', typeof res.body.group );

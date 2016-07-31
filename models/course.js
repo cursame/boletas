@@ -21,11 +21,6 @@ var mongoose        = require( 'mongoose' ),
             ref         : 'School',
             required    : true
         },
-        students        : [{
-            type        : mongoose.Schema.Types.ObjectId,
-            ref         : 'User',
-            required    : true
-        }],
         teacher         : {
             type        : mongoose.Schema.Types.ObjectId,
             ref         : 'User',

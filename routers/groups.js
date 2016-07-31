@@ -11,12 +11,16 @@ var express     = require( 'express' ),
             {
                 field   : 'school',
                 select  : 'features name settings'
+            },
+            {
+                field   : 'students',
+                select  : 'email name'
             }
         ];
     };
 
 router.get( '/', function ( req, res, next ) {
-    var filters     = [ '_id', 'administrator', 'name', 'school' ];
+    var filters     = [ '_id', 'administrator', 'name', 'school', 'students' ];
 
     Utils.paginate( Group, filters, _getRefs(), req, res, next );
 });
@@ -55,7 +59,8 @@ router.post( '/', function ( req, res, next ) {
         Group.create({
             administrator   : req.body.administrator,
             name            : req.body.name,
-            school          : req.body.school
+            school          : req.body.school,
+            students        : req.body.students
         }, function ( err, group ) {
             if ( err || !group ) {
                 err         = new Error( 'Invalid group data' );

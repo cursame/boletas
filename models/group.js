@@ -16,7 +16,12 @@ var mongoose        = require( 'mongoose' ),
             type        : mongoose.Schema.Types.ObjectId,
             ref         : 'School',
             required    : true
-        }
+        },
+        students        : [{
+            type        : mongoose.Schema.Types.ObjectId,
+            ref         : 'User',
+            required    : true
+        }]
     });
 
 module.exports      = mongoose.model( 'Group', GroupSchema );

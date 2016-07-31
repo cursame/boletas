@@ -13,10 +13,6 @@ var express     = require( 'express' ),
                 select  : 'features name settings'
             },
             {
-                field   : 'students',
-                select  : 'email name'
-            },
-            {
                 field   : 'teacher',
                 select  : 'email name'
             }
@@ -24,7 +20,7 @@ var express     = require( 'express' ),
     };
 
 router.get( '/', function ( req, res, next ) {
-    var filters     = [ '_id', 'name', 'school', 'students', 'teacher' ];
+    var filters     = [ '_id', 'name', 'school', 'teacher' ];
 
     Utils.paginate( Course, filters, _getRefs(), req, res, next );
 });
@@ -65,7 +61,6 @@ router.post( '/', function ( req, res, next ) {
             group       : req.body.group,
             name        : req.body.name,
             school      : req.body.school,
-            students    : req.body.students,
             teacher     : req.body.teacher
         }, function ( err, course ) {
             if ( err || !course ) {
